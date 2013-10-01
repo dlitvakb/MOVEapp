@@ -1,7 +1,7 @@
 <html>
     <head>
         <script type='text/javascript' src='http://localhost:8080/application.js'></script>
-        <script type='text/javascript' src='/static/jquery.min.js'></script>
+        <script type='text/javascript' src='/static/jquery.js'></script>
         <script type='text/javascript' src='/static/events.js'></script>
     </head>
     <body>
@@ -10,6 +10,24 @@
             <li><label for="name">Name: </label> <span id="name">None</span></li>
             <li><label for="surname">Surname: </label> <span id="surname">None</span></li>
         </ul>
+
+        <form id="persona">
+            <p>Name: <input type="text" name="name" /></p>
+            <p>Surame: <input type="text" name="surname" /></p>
+            <p><input type="submit" /></p>
+        </form>
     </body>
+
+    <script type="text/javascript">
+        $("#persona").on("submit", function(e) {
+            e.preventDefault();
+            $.post("/save",
+              {
+                name: $("input[name='name']").val(),
+                surname: $("input[name='surname']").val()
+              }
+            );
+        });
+    </script>
 </html>
 

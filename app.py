@@ -1,12 +1,12 @@
 from mongomodels.models import EventedValidatingStruct
 from mongomodels.models import ValidatingStruct
 from mongomodels.models.exceptions import NotFoundException
-from mongomodels.db import DocumentDatabase
+from mongomodels.db import MongoDatabaseBackend
 from juggernaut import Juggernaut
 
 
 class Callback(ValidatingStruct):
-    __DOCUMENT_DB__ = DocumentDatabase('localhost', 'test')
+    __DOCUMENT_DB__ = MongoDatabaseBackend('localhost', 'test')
 
     def validate(self):
         self.validate_not_empty('caller_id')
@@ -15,7 +15,7 @@ class Callback(ValidatingStruct):
 
 
 class SignalStorage(ValidatingStruct):
-    __DOCUMENT_DB__ = DocumentDatabase('localhost', 'test')
+    __DOCUMENT_DB__ = MongoDatabaseBackend('localhost', 'test')
 
     def validate(self):
         self.validate_not_empty('signal_name')
@@ -53,7 +53,7 @@ class EventDispatcher(object):
                          )
         callback_model.save()
         signal_model.callback_list.append(callback_model._id)
-
+        signal_model.save()
 
     def main_loop(self):
         for signal_name, data in self.__JUGGERNAUT__.subscribe_listen():
@@ -78,7 +78,7 @@ class JuggernautEventedStruct(EventedValidatingStruct):
 
 
 class Persona(JuggernautEventedStruct):
-    __DOCUMENT_DB__ = DocumentDatabase('localhost', 'test')
+    __DOCUMENT_DB__ = MongoDatabaseBackend('localhost', 'test')
 
     def post_save(self, is_new):
         self.emit("persona:saved", model=self.to_struct())
